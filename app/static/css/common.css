@@ -1,0 +1,206 @@
+/*
+|--------------------------------------------------------------------------
+| 공통 테마 변수
+|--------------------------------------------------------------------------
+| data-theme="dark" 또는 data-theme="light" 값에 따라
+| 전체 색상 테마가 바뀌도록 CSS 변수로 관리
+|--------------------------------------------------------------------------
+*/
+
+:root {
+    --font-main: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+    --radius-lg: 18px;
+    --radius-md: 12px;
+    --border-width: 1px;
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* 다크 모드 */
+html[data-theme="dark"] {
+    --bg-body: #070a0f;
+    --bg-panel: #0f141d;
+    --bg-panel-2: #131b27;
+    --bg-header: rgba(8, 12, 18, 0.92);
+
+    --text-main: #eef3fb;
+    --text-sub: #9eacc1;
+    --text-muted: #768499;
+
+    --border-color: rgba(255, 255, 255, 0.08);
+    --line-soft: rgba(255, 255, 255, 0.05);
+
+    --accent: #00d97e;
+    --accent-soft: rgba(0, 217, 126, 0.12);
+    --danger: #ff5d73;
+    --warning: #ffb347;
+    --yellow: #ffdb5a;
+
+    --panel-hover: #182232;
+}
+
+/* 라이트 모드 */
+html[data-theme="light"] {
+    --bg-body: #eef3f8;
+    --bg-panel: #ffffff;
+    --bg-panel-2: #f7f9fc;
+    --bg-header: rgba(255, 255, 255, 0.92);
+
+    --text-main: #1d2633;
+    --text-sub: #4f6076;
+    --text-muted: #74839a;
+
+    --border-color: rgba(20, 33, 53, 0.1);
+    --line-soft: rgba(20, 33, 53, 0.06);
+
+    --accent: #00a85f;
+    --accent-soft: rgba(0, 168, 95, 0.1);
+    --danger: #e24a63;
+    --warning: #e8971f;
+    --yellow: #d4a800;
+
+    --panel-hover: #eef5fb;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: var(--font-main);
+    background: var(--bg-body);
+    color: var(--text-main);
+}
+
+body {
+    min-height: 100vh;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 22px;
+    border-bottom: var(--border-width) solid var(--border-color);
+    background: var(--bg-header);
+    backdrop-filter: blur(14px);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+}
+
+.brand-title {
+    margin: 0;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    font-weight: 800;
+}
+
+.brand-desc {
+    margin: 0;
+    color: var(--text-sub);
+    font-size: 0.92rem;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.status-chip,
+.theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-panel);
+    color: var(--text-main);
+}
+
+.status-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.status-value {
+    font-weight: 700;
+}
+
+.theme-toggle-btn {
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+    background: var(--panel-hover);
+}
+
+.app-main {
+    padding: 18px;
+}
+
+.panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+}
+
+.panel-section + .panel-section {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line-soft);
+}
+
+.panel-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.panel-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-main);
+}

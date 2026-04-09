@@ -1,0 +1,51 @@
+{% extends "layout/base.html" %}
+
+{% block title %}수집 로그 테스트 페이지{% endblock %}
+
+{% block content %}
+<div style="padding: 30px;">
+    <h1>수집 실행 로그 테스트</h1>
+    <p>collector_job_log 테이블에 저장된 최근 수집 실행 이력을 확인하는 페이지입니다.</p>
+
+    <hr style="margin: 24px 0;">
+
+    {% if recent_logs %}
+    <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>작업명</th>
+                <th>상태</th>
+                <th>응답코드</th>
+                <th>원본건수</th>
+                <th>파싱건수</th>
+                <th>저장건수</th>
+                <th>건너뜀</th>
+                <th>시작시각</th>
+                <th>종료시각</th>
+                <th>에러메시지</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in recent_logs %}
+            <tr>
+                <td>{{ log.id }}</td>
+                <td>{{ log.job_name }}</td>
+                <td>{{ log.job_status }}</td>
+                <td>{{ log.response_status_code or "-" }}</td>
+                <td>{{ log.fetched_count }}</td>
+                <td>{{ log.parsed_count }}</td>
+                <td>{{ log.saved_count }}</td>
+                <td>{{ log.skipped_count }}</td>
+                <td>{{ log.started_at }}</td>
+                <td>{{ log.finished_at or "-" }}</td>
+                <td>{{ log.error_message or "-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>저장된 수집 로그가 없습니다.</p>
+    {% endif %}
+</div>
+{% endblock %}

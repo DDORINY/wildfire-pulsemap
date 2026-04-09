@@ -1,0 +1,72 @@
+{% extends "layout/base.html" %}
+
+{% block title %}DB 테스트 페이지{% endblock %}
+
+{% block content %}
+<div style="padding: 30px;">
+    <h1>DB 연결 테스트</h1>
+    <p>Flask에서 SQLite 데이터를 직접 읽어온 결과입니다.</p>
+
+    <hr style="margin: 24px 0;">
+
+    <h2>최근 산불 위험도 데이터</h2>
+    {% if recent_risks %}
+    <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-bottom: 30px;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>지역명</th>
+                <th>위험등급</th>
+                <th>위험점수</th>
+                <th>예보시각</th>
+                <th>출처</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for risk in recent_risks %}
+            <tr>
+                <td>{{ risk.id }}</td>
+                <td>{{ risk.region_name }}</td>
+                <td>{{ risk.risk_level }}</td>
+                <td>{{ risk.risk_score }}</td>
+                <td>{{ risk.forecast_time }}</td>
+                <td>{{ risk.source }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>저장된 산불 위험도 데이터가 없습니다.</p>
+    {% endif %}
+
+    <h2>최근 재난문자 데이터</h2>
+    {% if recent_messages %}
+    <table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>지역명</th>
+                <th>유형</th>
+                <th>발송기관</th>
+                <th>발송시각</th>
+                <th>문자내용</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for msg in recent_messages %}
+            <tr>
+                <td>{{ msg.id }}</td>
+                <td>{{ msg.region_name }}</td>
+                <td>{{ msg.message_type }}</td>
+                <td>{{ msg.sender }}</td>
+                <td>{{ msg.sent_at }}</td>
+                <td>{{ msg.message_text }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>저장된 재난문자 데이터가 없습니다.</p>
+    {% endif %}
+</div>
+{% endblock %}
