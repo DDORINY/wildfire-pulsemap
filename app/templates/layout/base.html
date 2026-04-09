@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Wildfire PulseMap{% endblock %}</title>
+
+    <!--
+        Leaflet:
+        지도 라이브러리 CDN
+        대한민국 지도 확대 표시를 위해 사용
+    -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        crossorigin=""
+    />
+
+    <!-- 공통 스타일 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+
+    <!-- 페이지별 추가 스타일 -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!--
+        전체 페이지의 공통 헤더
+        - 서비스명
+        - 현재 시각/상태
+        - 라이트/다크 토글 버튼
+    -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="brand-box">
+                <span class="brand-dot"></span>
+                <h1 class="brand-title">WILDFIRE PULSEMAP</h1>
+            </div>
+            <p class="brand-desc">산불 위험·경보 모니터링 대시보드</p>
+        </div>
+
+        <div class="header-right">
+            <div class="status-chip">
+                <span class="status-label">MODE</span>
+                <span class="status-value">KOREA</span>
+            </div>
+
+            <button id="themeToggleBtn" class="theme-toggle-btn" type="button">
+                <span id="themeToggleText">라이트 모드</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- 각 페이지 본문 -->
+    <main class="app-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Leaflet JS -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        crossorigin=""
+    ></script>
+
+    <!--
+        공통 테마 스크립트
+        - 사용자가 선택한 테마를 localStorage에 저장
+        - 페이지 새로고침 후에도 유지
+    -->
+    <script>
+        (function () {
+            const html = document.documentElement;
+            const savedTheme = localStorage.getItem("theme");
+
+            if (savedTheme === "light" || savedTheme === "dark") {
+                html.setAttribute("data-theme", savedTheme);
+            }
+
+            function updateThemeButtonText() {
+                const currentTheme = html.getAttribute("data-theme");
+                const btnText = document.getElementById("themeToggleText");
+                if (!btnText) return;
+
+                btnText.textContent = currentTheme === "dark" ? "라이트 모드" : "다크 모드";
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const toggleBtn = document.getElementById("themeToggleBtn");
+
+                updateThemeButtonText();
+
+                if (toggleBtn) {
+                    toggleBtn.addEventListener("click", function () {
+                        const currentTheme = html.getAttribute("data-theme");
+                        const nextTheme = currentTheme === "dark" ? "light" : "dark";
+
+                        html.setAttribute("data-theme", nextTheme);
+                        localStorage.setItem("theme", nextTheme);
+                        updateThemeButtonText();
+                    });
+                }
+            });
+        })();
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

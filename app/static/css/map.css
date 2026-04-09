@@ -1,0 +1,185 @@
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr) 360px;
+    gap: 16px;
+    height: calc(100vh - 92px);
+}
+
+.left-panel,
+.right-panel {
+    padding: 18px;
+    overflow: auto;
+}
+
+.center-panel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.map-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line-soft);
+    background: var(--bg-panel-2);
+}
+
+.map-title {
+    margin: 0;
+    font-size: 1.06rem;
+    font-weight: 800;
+}
+
+.map-subtitle {
+    margin: 6px 0 0;
+    color: var(--text-sub);
+    font-size: 0.9rem;
+}
+
+.toolbar-btn {
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-panel);
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+.toolbar-btn:hover {
+    background: var(--panel-hover);
+}
+
+#pulseMap {
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+}
+
+/* 왼쪽 패널 */
+.check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    color: var(--text-main);
+}
+
+.stat-card {
+    padding: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--bg-panel-2);
+    margin-bottom: 12px;
+}
+
+.stat-label {
+    display: block;
+    color: var(--text-sub);
+    font-size: 0.86rem;
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.legend-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.legend-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: var(--text-main);
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.risk-low { background: #4caf50; }
+.risk-mid { background: #ffc107; }
+.risk-high { background: #ff7043; }
+.risk-very-high { background: #e53935; }
+
+/* 오른쪽 패널 */
+.message-list,
+.top-risk-list,
+.region-detail-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.message-item,
+.top-risk-item {
+    padding: 12px;
+    border-radius: 14px;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--border-color);
+}
+
+.message-region,
+.top-risk-region {
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.message-text,
+.top-risk-meta {
+    color: var(--text-sub);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.region-detail-box {
+    min-height: 140px;
+    padding: 14px;
+    border-radius: 14px;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--border-color);
+    color: var(--text-sub);
+    line-height: 1.65;
+}
+
+/* Leaflet 팝업 다크/라이트 적응 */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    background: var(--bg-panel);
+    color: var(--text-main);
+}
+
+@media (max-width: 1400px) {
+    .dashboard-grid {
+        grid-template-columns: 260px minmax(0, 1fr) 320px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .left-panel,
+    .right-panel {
+        order: 2;
+    }
+
+    .center-panel {
+        order: 1;
+        min-height: 620px;
+    }
+}

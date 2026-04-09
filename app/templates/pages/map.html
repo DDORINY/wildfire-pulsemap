@@ -1,0 +1,115 @@
+{% extends "layout/base.html" %}
+
+{% block title %}산불 위험·경보 펄스맵{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/map.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- 왼쪽 패널 -->
+    <aside class="left-panel panel">
+        <section class="panel-section">
+            <div class="panel-title-row">
+                <h2 class="panel-title">레이어</h2>
+            </div>
+
+            <label class="check-row">
+                <input type="checkbox" id="toggleRiskLayer" checked>
+                <span>산불 위험도</span>
+            </label>
+
+            <label class="check-row">
+                <input type="checkbox" id="toggleMessageLayer" checked>
+                <span>재난문자</span>
+            </label>
+
+            <label class="check-row">
+                <input type="checkbox" id="toggleTopRiskOnly">
+                <span>고위험 지역만 보기</span>
+            </label>
+        </section>
+
+        <section class="panel-section">
+            <div class="panel-title-row">
+                <h2 class="panel-title">상태 요약</h2>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">현재 고위험 지역</span>
+                <strong class="stat-value" id="highRiskCount">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">최근 재난문자</span>
+                <strong class="stat-value" id="messageCount">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">선택 지역</span>
+                <strong class="stat-value" id="selectedRegionName">없음</strong>
+            </div>
+        </section>
+
+        <section class="panel-section">
+            <div class="panel-title-row">
+                <h2 class="panel-title">범례</h2>
+            </div>
+
+            <ul class="legend-list">
+                <li><span class="legend-color risk-low"></span> 낮음</li>
+                <li><span class="legend-color risk-mid"></span> 보통</li>
+                <li><span class="legend-color risk-high"></span> 높음</li>
+                <li><span class="legend-color risk-very-high"></span> 매우 높음</li>
+            </ul>
+        </section>
+    </aside>
+
+    <!-- 중앙 지도 -->
+    <section class="center-panel panel">
+        <div class="map-toolbar">
+            <div class="toolbar-left">
+                <h2 class="map-title">대한민국 산불 위험 지도</h2>
+                <p class="map-subtitle">위험 예보 + 실제 재난문자 통합 보기</p>
+            </div>
+
+            <div class="toolbar-right">
+                <button id="resetMapBtn" class="toolbar-btn" type="button">지도 초기화</button>
+            </div>
+        </div>
+
+        <div id="pulseMap"></div>
+    </section>
+
+    <!-- 오른쪽 패널 -->
+    <aside class="right-panel panel">
+        <section class="panel-section">
+            <div class="panel-title-row">
+                <h2 class="panel-title">최근 재난문자</h2>
+            </div>
+            <div id="messageList" class="message-list"></div>
+        </section>
+
+        <section class="panel-section">
+            <div class="panel-title-row">
+                <h2 class="panel-title">위험도 TOP 지역</h2>
+            </div>
+            <div id="topRiskList" class="top-risk-list"></div>
+        </section>
+
+        <section class="panel-section">
+            <div class="panel-title-row">
+                <h2 class="panel-title">지역 상세</h2>
+            </div>
+            <div id="regionDetailBox" class="region-detail-box">
+                지도의 마커를 클릭하면 지역 상세 정보가 표시됩니다.
+            </div>
+        </section>
+    </aside>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+{% endblock %}
