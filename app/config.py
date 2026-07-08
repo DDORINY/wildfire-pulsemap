@@ -48,7 +48,25 @@ def resolve_database_url(database_url: str) -> str:
     return f"{sqlite_prefix}{absolute_path.as_posix()}"
 
 
+def ensure_sqlite_dir_exists(database_url: str) -> None:
+    """
+    SQLite 파일의 상위 폴더가 없으면 만들어둔다.
+
+    Render 같은 배포 환경은 컨테이너가 새로 뜰 때마다 storage/가
+    저장소에 없는 상태로 시작되는데, sqlite3는 상위 폴더를 자동으로
+    만들어주지 않아 "unable to open database file"로 그대로 죽는다.
+    """
+    sqlite_prefix = "sqlite:///"
+
+    if not database_url.startswith(sqlite_prefix):
+        return
+
+    sqlite_path = Path(database_url[len(sqlite_prefix):])
+    sqlite_path.parent.mkdir(parents=True, exist_ok=True)
+
+
 DATABASE_URL = resolve_database_url(DATABASE_URL)  # 어떤 실행 위치에서도 같은 DB 파일을 보도록 정규화한다.
+ensure_sqlite_dir_exists(DATABASE_URL)
 
 """
 외부 공공데이터 API 키
