@@ -349,6 +349,7 @@ function bindLayerToggleEvents() {
     const messageCheckbox = document.getElementById("toggleMessageLayer");
     const topRiskOnlyCheckbox = document.getElementById("toggleTopRiskOnly");
     const resetMapBtn = document.getElementById("resetMapBtn");
+    const collectWildfireBtn = document.getElementById("collectWildfireBtn");
 
     if (riskCheckbox) {
         riskCheckbox.addEventListener("change", function () {
@@ -380,6 +381,50 @@ function bindLayerToggleEvents() {
         resetMapBtn.addEventListener("click", function () {
             map.setView([36.35, 127.85], 7);
         });
+    }
+
+    if (collectWildfireBtn) {
+        collectWildfireBtn.addEventListener("click", function () {
+            collectWildfireNow(collectWildfireBtn);
+        });
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| "최신 데이터 수집" 버튼 - 산불위험예보 collector 즉시 실행
+|--------------------------------------------------------------------------
+*/
+async function collectWildfireNow(button) {
+    const originalLabel = button.textContent;
+    button.disabled = true;
+    button.textContent = "수집 중...";
+    updateDataStatus("산불위험예보 최신 데이터를 수집하는 중입니다.");
+
+    try {
+        const response = await fetch("/api/collect/wildfire", { method: "POST" });
+        const result = await response.json();
+
+        if (!response.ok) {
+            updateDataStatus(result.message || "수집 요청이 거부되었습니다.");
+            return;
+        }
+
+        if (result.status === "SUCCESS") {
+            updateDataStatus(
+                `수집 완료 - 수신 ${result.fetched_count}건 / 저장 ${result.saved_count}건 / 제외 ${result.skipped_count}건`
+            );
+        } else {
+            updateDataStatus(result.error_message || "수집에 실패했습니다.");
+        }
+
+        await loadLiveData();
+    } catch (error) {
+        console.error("산불위험예보 수집 요청 실패", error);
+        updateDataStatus("수집 요청 중 오류가 발생했습니다.");
+    } finally {
+        button.disabled = false;
+        button.textContent = originalLabel;
     }
 }
 

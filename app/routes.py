@@ -14,6 +14,8 @@ from flask import Blueprint, render_template, jsonify
 from app.db.session import SessionLocal
 from app.db.models import Region, WildfireRisk, DisasterMessage
 from app.db.models.collector_job_log import CollectorJobLog
+from app.collectors.job_lock import collector_lock
+from app.collectors.wildfire_risk_collector import WildfireRiskCollector
 
 main_bp = Blueprint("main", __name__)
 
@@ -160,6 +162,50 @@ def api_messages_latest():
 
     finally:
         session.close()
+
+@main_bp.route("/api/collect/wildfire", methods=["POST"])
+def api_collect_wildfire():
+    """
+    산불위험예보 collector를 즉시 1회 실행하는 수동 트리거 API
+
+    역할:
+    - 프론트 "최신 데이터 수집" 버튼에서 호출
+    - collector_lock으로 서버 시작 시 자동수집/스케줄러와 중복 실행되지 않게 막는다.
+    - 실행 직후 collector_job_log의 최신 기록을 그대로 응답으로 돌려준다.
+    """
+    with collector_lock("wildfire_risk_collector") as acquired:
+        if not acquired:
+            return jsonify({
+                "status": "SKIPPED",
+                "message": "이미 다른 수집 작업이 진행 중입니다. 잠시 후 다시 시도해주세요.",
+            }), 409
+
+        WildfireRiskCollector().collect()
+
+    session = SessionLocal()
+
+    try:
+        latest_log = (
+            session.query(CollectorJobLog)
+            .filter(CollectorJobLog.job_name == "wildfire_risk_collector")
+            .order_by(CollectorJobLog.id.desc())
+            .first()
+        )
+
+        if not latest_log:
+            return jsonify({"status": "UNKNOWN", "message": "실행 로그를 찾을 수 없습니다."}), 500
+
+        return jsonify({
+            "status": latest_log.job_status,
+            "fetched_count": latest_log.fetched_count,
+            "saved_count": latest_log.saved_count,
+            "skipped_count": latest_log.skipped_count,
+            "error_message": latest_log.error_message,
+        })
+
+    finally:
+        session.close()
+
 
 @main_bp.route("/job-log-test")
 def job_log_test():
