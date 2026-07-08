@@ -32,13 +32,20 @@ def create_app():
 def ensure_db_ready():
     """
     DB 테이블 생성과 시도/시군구 region 시드를 앱 시작 시마다 보장한다.
-    둘 다 upsert/create_all 기반이라 반복 실행해도 안전하다.
+
+    gunicorn이 worker를 여러 개 띄우면 create_app()이 worker 수만큼
+    동시에 실행되는데, 그때마다 267개 region upsert를 동시에 돌리면
+    SQLite 쓰기 경합("database is locked")만 키운다. 한 worker만
+    실행하고 나머지는 건너뛰도록 락으로 감싼다 (idempotent라 스킵해도 안전).
     """
+    from app.collectors.job_lock import collector_lock
     from app.db.init_db import init_db
     from scripts.seed_sido_regions import main as seed_sido_regions
 
-    init_db()
-    seed_sido_regions()
+    with collector_lock("app_startup_db_init") as acquired:
+        if acquired:
+            init_db()
+            seed_sido_regions()
 
 
 def trigger_startup_wildfire_collect():

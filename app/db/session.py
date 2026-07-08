@@ -9,7 +9,7 @@ DB 연결 엔진과 세션을 만드는 파일
 - 나중에 insert, select, update 할 때 이 세션을 사용
 """
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
 from app.config import DATABASE_URL
@@ -25,8 +25,8 @@ from app.config import DATABASE_URL
 # SQLAlchemy 2.x 스타일에 맞게 동작하도록 설정
 connect_args = {}
 
-# 서버 시작 시 백그라운드 수집 스레드와 요청 처리가 동시에 SQLite에 접근할 수 있어서,
-# 짧은 잠금 충돌 정도는 예외 대신 잠깐 대기 후 재시도하도록 timeout을 늘려둔다.
+# 여러 gunicorn worker가 동시에 SQLite에 접근할 때 짧은 잠금 충돌 정도는
+# 예외 대신 잠깐 대기 후 재시도하도록 timeout을 늘려둔다.
 if DATABASE_URL.startswith("sqlite:///"):
     connect_args["timeout"] = 15
 
@@ -36,6 +36,19 @@ engine = create_engine(
     future=True,
     connect_args=connect_args,
 )
+
+if DATABASE_URL.startswith("sqlite:///"):
+    @event.listens_for(engine, "connect")
+    def set_sqlite_pragma(dbapi_connection, connection_record):
+        """
+        기본 저널 모드는 쓰기 도중 읽기까지 막아서 worker가 여러 개면
+        "database is locked"가 바로 터진다. WAL 모드는 쓰기 하나 + 읽기
+        여러 개를 동시에 허용해서 gunicorn 멀티워커 환경에서 필수다.
+        """
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA synchronous=NORMAL")
+        cursor.close()
 
 # sessionmaker:
 # DB 작업용 세션 공장
